@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherDAO — Simple AI Agent DAO</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & Babel for browser runtime -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        googleBlue: '#1A73E8',
+                        googleGreen: '#34A853',
+                        googleRed: '#EA4335',
+                        googleYellow: '#FBBC04',
+                    },
+                    fontFamily: {
+                        sans: ['Google Sans', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F8F9FA;
+            color: #202124;
+            font-family: 'Google Sans', 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .simple-card {
+            background-color: #FFFFFF;
+            border: 1px solid #DADCE0;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+        }
+        .simple-card:hover {
+            box-shadow: 0 4px 16px rgba(60, 64, 67, 0.08);
+            border-color: #BDC1C6;
+        }
+        .btn-primary {
+            background-color: #1A73E8;
+            color: #FFFFFF;
+            font-weight: 500;
+            border-radius: 24px;
+            padding: 10px 24px;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #1557B0;
+            box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const SIMPLE_PROPOSALS = [
+            {
+                id: 'Proposal #1',
+                title: 'Invest $250k into High-Yield Investment Pool',
+                category: 'Yield Investment',
+                returnRate: '+14.8% APY',
+                budget: '$250,000',
+                status: 'ACTIVE',
+                aiNote: 'AI identified a low-risk 14.8% yield opportunity in stable crypto pools.',
+                votes: { yes: 88, no: 12 },
+                userVoted: null
+            },
+            {
+                id: 'Proposal #2',
+                title: 'Buy Back & Burn $100k of DAO Tokens',
+                category: 'Token Value',
+                returnRate: '+6.4% Value Accretion',
+                budget: '$100,000',
+                status: 'PASSED',
+                aiNote: 'DAO token price is below treasury value. Buying back tokens increases value for stakers.',
+                votes: { yes: 94, no: 6 },
+                userVoted: 'YES'
+            },
+            {
+                id: 'Proposal #3',
+                title: 'Fund $50k Automated Marketing Campaign',
+                category: 'Growth',
+                returnRate: '+45% Community Growth',
+                budget: '$50,000',
+                status: 'EXECUTED',
+                aiNote: 'AI sub-agent will run 24/7 community updates to attract new members.',
+                votes: { yes: 82, no: 18 },
+                userVoted: 'YES',
+                profitPaid: '+$14,250 USDC'
+            }
+        ];
+
+        function App() {
+            const [proposals, setProposals] = useState(SIMPLE_PROPOSALS);
+            const [activeTab, setActiveTab] = useState('proposals'); // 'proposals', 'create', 'howitworks'
+            const [myProfit, setMyProfit] = useState(1840.50);
+            const [treasury, setTreasury] = useState(2485200);
+            const [showSuccessToast, setShowSuccessToast] = useState('');
+            const [isGenerating, setIsGenerating] = useState(false);
+
+            // Voting action
+            const handleVote = (id, voteType) => {
+                setProposals(prev => prev.map(p => {
+                    if (p.id === id) {
+                        return { ...p, userVoted: voteType };
+                    }
+                    return p;
+                }));
+                setShowSuccessToast(`Vote recorded: ${voteType} on ${id}`);
+                setTimeout(() => setShowSuccessToast(''), 3000);
+            };
+
+            // Execute proposal
+            const handleExecute = (id) => {
+                setProposals(prev => prev.map(p => {
+                    if (p.id === id) {
+                        return { ...p, status: 'EXECUTED', profitPaid: '+$18,500 USDC' };
+                    }
+                    return p;
+                }));
+                setMyProfit(prev => prev + 450);
+                setTreasury(prev => prev + 18500);
+                setShowSuccessToast(`Executed Smart Contract! Profits added to your balance.`);
+                setTimeout(() => setShowSuccessToast(''), 4000);
+            };
+
+            // Claim profit
+            const handleClaim = () => {
+                if (myProfit <= 0) return;
+                setMyProfit(0);
+                setShowSuccessToast('Successfully claimed your profit payout to your wallet!');
+                setTimeout(() => setShowSuccessToast(''), 4000);
+            };
+
+            // AI Generator
+            const handleCreateProposal = (type) => {
+                setIsGenerating(true);
+                setTimeout(() => {
+                    const newProp = {
+                        id: `Proposal #${proposals.length + 1}`,
+                        title: `AI Strategy: ${type}`,
+                        category: 'AI Generated',
+                        returnRate: '+16.5% Expected Gain',
+                        budget: '$150,000',
+                        status: 'ACTIVE',
+                        aiNote: `AI Agent synthesized market data and generated this optimal ${type} plan.`,
+                        votes: { yes: 100, no: 0 },
+                        userVoted: 'YES'
+                    };
+                    setProposals([newProp, ...proposals]);
+                    setIsGenerating(false);
+                    setActiveTab('proposals');
+                    setShowSuccessToast('AI Agent successfully created a new proposal!');
+                    setTimeout(() => setShowSuccessToast(''), 3000);
+                }, 2000);
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col bg-[#F8F9FA]">
+                    
+                    {/* Clean Simple Header */}
+                    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+                        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+                            {/* Google-styled Logo */}
+                            <div className="flex items-center text-xl font-bold tracking-tight">
+                                <span className="text-[#4285F4]">A</span>
+                                <span className="text-[#EA4335]">e</span>
+                                <span className="text-[#FBBC04]">t</span>
+                                <span className="text-[#4285F4]">h</span>
+                                <span className="text-[#34A853]">e</span>
+                                <span className="text-[#EA4335]">r</span>
+                                <span className="text-[#202124] font-semibold text-lg ml-1 font-mono">DAO</span>
+                            </div>
+
+                            {/* Clean Navigation Links */}
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setActiveTab('proposals')}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                                        activeTab === 'proposals' ? 'bg-[#E8F0FE] text-[#1967D2]' : 'text-[#5F6368] hover:bg-gray-100'
+                                    }`}
+                                >
+                                    Proposals ({proposals.length})
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('create')}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                                        activeTab === 'create' ? 'bg-[#E8F0FE] text-[#1967D2]' : 'text-[#5F6368] hover:bg-gray-100'
+                                    }`}
+                                >
+                                    + Ask AI to Generate
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('howitworks')}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                                        activeTab === 'howitworks' ? 'bg-[#E8F0FE] text-[#1967D2]' : 'text-[#5F6368] hover:bg-gray-100'
+                                    }`}
+                                >
+                                    How it Works
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Toast Notification */}
+                    {showSuccessToast && (
+                        <div className="fixed top-20 right-6 z-50 bg-[#202124] text-white px-5 py-3 rounded-xl shadow-lg text-sm flex items-center gap-2">
+                            <span>✓</span>
+                            <span>{showSuccessToast}</span>
+                        </div>
+                    )}
+
+                    <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8 space-y-8">
+                        
+                        {/* 1. Ultra Simple Hero Banner */}
+                        <div className="text-center space-y-2 py-4">
+                            <h1 className="text-3xl sm:text-4xl font-bold text-[#202124]">
+                                AI proposes ideas. You vote. Smart contracts pay profits.
+                            </h1>
+                            <p className="text-base text-[#5F6368] max-w-2xl mx-auto">
+                                No secret algorithms. Full transparency and community control.
+                            </p>
+                        </div>
+
+                        {/* 2. Three Clean Metric Boxes */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div className="simple-card p-5 text-center">
+                                <div className="text-xs font-semibold text-[#5F6368] uppercase tracking-wider mb-1">Total Treasury</div>
+                                <div className="text-2xl font-bold text-[#202124]">${treasury.toLocaleString()}</div>
+                            </div>
+                            <div className="simple-card p-5 text-center">
+                                <div className="text-xs font-semibold text-[#5F6368] uppercase tracking-wider mb-1">Active Proposals</div>
+                                <div className="text-2xl font-bold text-[#1A73E8]">{proposals.filter(p=>p.status==='ACTIVE').length} Active</div>
+                            </div>
+                            <div className="simple-card p-5 text-center bg-[#FCE8E6]/20 border-[#EA4335]/20 flex flex-col items-center justify-between">
+                                <div>
+                                    <div className="text-xs font-semibold text-[#5F6368] uppercase tracking-wider mb-1">Your Unclaimed Profit</div>
+                                    <div className="text-2xl font-bold text-[#137333]">${myProfit.toFixed(2)}</div>
+                                </div>
+                                {myProfit > 0 && (
+                                    <button 
+                                        onClick={handleClaim}
+                                        className="mt-3 bg-[#34A853] hover:bg-[#2D9247] text-white text-xs font-bold px-4 py-1.5 rounded-full transition"
+                                    >
+                                        Claim Rewards
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+
+                        {/* TAB 1: PROPOSALS */}
+                        {activeTab === 'proposals' && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-xl font-bold text-[#202124]">Live AI Proposals</h2>
+                                    <span className="text-xs text-[#5F6368]">Vote YES or NO to decide</span>
+                                </div>
+
+                                {proposals.map(prop => (
+                                    <div key={prop.id} className="simple-card p-6 space-y-4">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-xs font-bold text-[#1A73E8] bg-[#E8F0FE] px-2.5 py-0.5 rounded-full">
+                                                        {prop.id}
+                                                    </span>
+                                                    <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                                                        prop.status === 'ACTIVE' ? 'bg-[#FEF7E0] text-[#B06000]' :
+                                                        prop.status === 'PASSED' ? 'bg-[#E6F4EA] text-[#137333]' :
+                                                        'bg-[#E8F0FE] text-[#1967D2]'
+                                                    }`}>
+                                                        {prop.status}
+                                                    </span>
+                                                </div>
+                                                <h3 className="text-lg font-bold text-[#202124]">{prop.title}</h3>
+                                            </div>
+
+                                            <div className="text-right sm:self-center">
+                                                <div className="text-xs text-[#5F6368]">Expected ROI</div>
+                                                <div className="text-base font-bold text-[#137333]">{prop.returnRate}</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Simple AI Explanation */}
+                                        <div className="bg-[#F8F9FA] p-3.5 rounded-xl border border-gray-200 text-sm text-[#3C4043]">
+                                            <strong className="text-[#202124]">Why AI suggests this:</strong> {prop.aiNote}
+                                        </div>
+
+                                        {/* Simple Votes Progress */}
+                                        <div className="space-y-1">
+                                            <div className="flex justify-between text-xs font-semibold text-[#5F6368]">
+                                                <span className="text-[#137333]">{prop.votes.yes}% YES</span>
+                                                <span className="text-[#C5221F]">{prop.votes.no}% NO</span>
+                                            </div>
+                                            <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden flex">
+                                                <div className="h-full bg-[#34A853]" style={{ width: `${prop.votes.yes}%` }}></div>
+                                                <div className="h-full bg-[#EA4335]" style={{ width: `${prop.votes.no}%` }}></div>
+                                            </div>
+                                        </div>
+
+                                        {/* Simple Actions */}
+                                        <div className="flex items-center justify-between pt-2">
+                                            <div className="text-xs text-[#5F6368]">Required Capital: <strong>{prop.budget}</strong></div>
+
+                                            <div className="flex items-center gap-2">
+                                                {prop.status === 'ACTIVE' && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleVote(prop.id, 'YES')}
+                                                            className={`px-5 py-2 rounded-full text-xs font-bold transition ${
+                                                                prop.userVoted === 'YES'
+                                                                    ? 'bg-[#34A853] text-white'
+                                                                    : 'bg-white border border-gray-300 text-[#202124] hover:bg-gray-100'
+                                                            }`}
+                                                        >
+                                                            ✓ Vote YES
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleVote(prop.id, 'NO')}
+                                                            className={`px-5 py-2 rounded-full text-xs font-bold transition ${
+                                                                prop.userVoted === 'NO'
+                                                                    ? 'bg-[#EA4335] text-white'
+                                                                    : 'bg-white border border-gray-300 text-[#202124] hover:bg-gray-100'
+                                                            }`}
+                                                        >
+                                                            ✕ Vote NO
+                                                        </button>
+                                                    </>
+                                                )}
+
+                                                {prop.status === 'PASSED' && (
+                                                    <button
+                                                        onClick={() => handleExecute(prop.id)}
+                                                        className="btn-primary text-xs"
+                                                    >
+                                                        ⚡ Execute Smart Contract
+                                                    </button>
+                                                )}
+
+                                                {prop.status === 'EXECUTED' && (
+                                                    <span className="text-xs font-bold text-[#137333] bg-[#E6F4EA] px-3 py-1.5 rounded-full">
+                                                        ✓ Executed & Profit Distributed ({prop.profitPaid})
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+
+                        {/* TAB 2: ASK AI TO GENERATE */}
+                        {activeTab === 'create' && (
+                            <div className="simple-card p-6 sm:p-8 max-w-xl mx-auto space-y-6">
+                                <div className="text-center space-y-1">
+                                    <h2 className="text-2xl font-bold text-[#202124]">Ask AI to Formulate an Idea</h2>
+                                    <p className="text-sm text-[#5F6368]">Select what kind of strategy you want the AI agent to analyze.</p>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {[
+                                        { type: 'DeFi Yield Investment', desc: 'Find high-return, low-risk crypto lending pools.' },
+                                        { type: 'Token Buyback & Burn', desc: 'Use extra treasury cash to increase token value.' },
+                                        { type: 'Marketing Growth Sub-Agent', desc: 'Automate social outreach to bring in new members.' }
+                                    ].map(opt => (
+                                        <button
+                                            key={opt.type}
+                                            onClick={() => handleCreateProposal(opt.type)}
+                                            disabled={isGenerating}
+                                            className="w-full text-left p-4 rounded-2xl border border-gray-200 hover:border-[#1A73E8] hover:bg-[#E8F0FE]/30 transition space-y-1"
+                                        >
+                                            <div className="font-bold text-base text-[#1A73E8]">{opt.type}</div>
+                                            <div className="text-xs text-[#5F6368]">{opt.desc}</div>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {isGenerating && (
+                                    <div className="p-4 rounded-xl bg-[#E8F0FE] text-[#1967D2] text-sm text-center font-medium animate-pulse">
+                                        AI Agent is evaluating market data... Please wait 2 seconds.
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+
+                        {/* TAB 3: HOW IT WORKS */}
+                        {activeTab === 'howitworks' && (
+                            <div className="simple-card p-6 sm:p-8 space-y-6">
+                                <h2 className="text-2xl font-bold text-[#202124] text-center">How AI Agent DAO Works in 4 Steps</h2>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                                    <div className="p-4 rounded-2xl bg-[#F8F9FA] border border-gray-200 space-y-2">
+                                        <div className="w-8 h-8 rounded-full bg-[#1A73E8] text-white flex items-center justify-center font-bold text-sm">1</div>
+                                        <h3 className="font-bold text-base text-[#202124]">AI Formulates Proposal</h3>
+                                        <p className="text-xs text-[#5F6368] leading-relaxed">
+                                            The AI Agent continuously scans markets and writes clear proposal ideas with expected ROI and budget requirements.
+                                        </p>
+                                    </div>
+
+                                    <div className="p-4 rounded-2xl bg-[#F8F9FA] border border-gray-200 space-y-2">
+                                        <div className="w-8 h-8 rounded-full bg-[#FBBC04] text-slate-900 flex items-center justify-center font-bold text-sm">2</div>
+                                        <h3 className="font-bold text-base text-[#202124]">Community Votes</h3>
+                                        <p className="text-xs text-[#5F6368] leading-relaxed">
+                                            Token holders cast YES or NO votes. No proposal can execute without community consensus.
+                                        </p>
+                                    </div>
+
+                                    <div className="p-4 rounded-2xl bg-[#F8F9FA] border border-gray-200 space-y-2">
+                                        <div className="w-8 h-8 rounded-full bg-[#EA4335] text-white flex items-center justify-center font-bold text-sm">3</div>
+                                        <h3 className="font-bold text-base text-[#202124]">Smart Contract Executes</h3>
+                                        <p className="text-xs text-[#5F6368] leading-relaxed">
+                                            Once passed, decisions execute automatically on-chain with zero middleman interference.
+                                        </p>
+                                    </div>
+
+                                    <div className="p-4 rounded-2xl bg-[#F8F9FA] border border-gray-200 space-y-2">
+                                        <div className="w-8 h-8 rounded-full bg-[#34A853] text-white flex items-center justify-center font-bold text-sm">4</div>
+                                        <h3 className="font-bold text-base text-[#202124]">Profits Distributed</h3>
+                                        <p className="text-xs text-[#5F6368] leading-relaxed">
+                                            Returns generated by executed strategies automatically flow to DAO stakers as USDC dividends.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </main>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
