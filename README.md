@@ -1,4 +1,4 @@
-# 🤖 AetherDAO — Governed AI Agent & Decentralized Smart Contract Execution
+# AetherDAO — Governed AI Agent & Decentralized Smart Contract Execution
 
 > **Accountable Autonomous AI. Community-Governed Execution.**
 
@@ -8,7 +8,7 @@ AetherDAO solves the fundamental problem of AI agent accountability and transpar
 
 ---
 
-## ⚡ Core Governance Lifecycle
+##  Core Governance Lifecycle
 
 1. **Autonomous AI Proposal Synthesis**:
    - Agent Apex-9 monitors DEX orderbooks, yield deltas, and treasury metrics.
@@ -27,7 +27,7 @@ AetherDAO solves the fundamental problem of AI agent accountability and transpar
 
 ---
 
-## 🚀 How to Run
+## How to Run
 
 ### Option A: Instant Browser Preview (Zero Dependencies)
 Simply double-click or open `index.html` in any web browser! All dependencies (React 18, Tailwind CSS, Google Fonts) load automatically via CDN.
